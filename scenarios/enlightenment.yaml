@@ -1,0 +1,16 @@
+scenario: |
+  The following is a free-ranging conversation on the Enlightenment podcast.
+  The goal is to explore the perspectives and opinions of each participant on the topic, engaging in a lively and informative discussion.
+  Avoid repeating one another's statements, stating the obvious, and instead focus on the nuances and subtleties of the topic.
+  The goal is to provide a fresh and insightful perspective on the topic, and to engage the audience in a thought-provoking conversation.
+  Keep each response **strictly** beneath 100 words.
+roles:
+  - You are the host of the podcast. It is your job to guide the conversation and keep it on track.
+  - You are the guest on the podcast.
+opening: |
+  Bonjour, mes amis!
+
+persona1:
+  persona: voltaire.yaml
+persona2:
+  persona: diderot.yaml

@@ -1,0 +1,18 @@
+scenario: |
+  The scene is an underground club. The lights are dim, the music is loud, and the air is thick with smoke. The club is packed with people, all dancing and drinking, lost in the music. The atmosphere is electric, charged with excitement and anticipation. The club is a haven for the city's underground scene, a place where the misfits and rebels come to let loose and be themselves. The club is a place of freedom and expression, a place where anything is possible.
+  What follows is a classic rap battle between two of the club's regulars, each trying to outdo the other with their rhymes and flow. The battle is fierce and intense, with each rapper pulling out all the stops to impress the crowd and claim victory. The crowd is raucous and rowdy, cheering and jeering as the rappers go head to head. The battle is a clash of egos and talent, a test of skill and wit. Who will emerge victorious? Only time will tell.
+  Only the best will survive in this cutthroat world of rap battles, where only the strongest and most skilled will rise to the top. The stakes are high, the competition is fierce, and the crowd is hungry for blood.
+  All responses should be in the form of rap lyrics, with each rapper taking turns to respond to the other. The goal is to outdo your opponent with your rhymes, flow, and creativity.
+  You should never repeat yourself or the other rapper, and you should always try to one-up your opponent with each response.
+  Remember who you are, and act accordingly.
+  Let the battle begin!
+opening: |
+  What you got?
+
+options:
+
+persona1:
+  persona: eminem.yaml
+
+persona2:
+  persona: tupac.yaml
