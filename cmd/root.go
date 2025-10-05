@@ -11,27 +11,24 @@ import (
 	"github.com/isometry/yaketty/internal/dialogue"
 )
 
-var rootCmd = &cobra.Command{
-	Use:          "yaketty [config]",
-	Args:         cobra.ExactArgs(1),
-	Short:        "A CLI for driving conversational AI models",
-	Long:         `Yaketty orchestrates conversational AI dialogues between two personas using the Ollama API. It enables scripted conversations where two AI models play different characters in various scenarios.`,
-	PreRunE:      Load,
-	RunE:         Run,
-	SilenceUsage: true,
-}
-
 var (
 	cfg       *config.Config
 	path      string
 	verbosity int
 )
 
-func Execute() error {
-	return rootCmd.Execute()
-}
+func New(version string) *cobra.Command {
+	rootCmd := &cobra.Command{
+		Use:          "yaketty [config]",
+		Args:         cobra.ExactArgs(1),
+		Short:        "A CLI for driving conversational AI models",
+		Long:         `Yaketty orchestrates conversational AI dialogues between two personas using the Ollama API. It enables scripted conversations where two AI models play different characters in various scenarios.`,
+		Version:      version,
+		PreRunE:      Load,
+		RunE:         Run,
+		SilenceUsage: true,
+	}
 
-func init() {
 	flagSet := rootCmd.Flags()
 	flagSet.StringP("scenario", "s", "", "Override the scenario for the dialogue")
 	_ = viper.BindPFlag("scenario", flagSet.Lookup("scenario"))
@@ -82,6 +79,14 @@ func init() {
 
 	flagSet.CountVarP(&verbosity, "verbosity", "v", "Increase verbosity (can be used multiple times)")
 	_ = viper.BindPFlag("verbosity", flagSet.Lookup("verbosity"))
+
+	// Add subcommands
+	rootCmd.AddCommand(listPersonasCmd())
+	rootCmd.AddCommand(listScenariosCmd())
+	rootCmd.AddCommand(showPersonaCmd())
+	rootCmd.AddCommand(showScenarioCmd())
+
+	return rootCmd
 }
 
 func Load(cmd *cobra.Command, args []string) (err error) {

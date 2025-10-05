@@ -9,23 +9,21 @@ import (
 	"github.com/isometry/yaketty/internal/library"
 )
 
-var listScenariosCmd = &cobra.Command{
-	Use:   "list-scenarios",
-	Short: "List all available embedded scenarios",
-	Long:  `List all scenario files that are embedded in the yaketty binary.`,
-	Run: func(cmd *cobra.Command, args []string) {
-		scenarios, err := library.ListScenarios()
-		if err != nil {
-			slog.Error("failed to list scenarios", "error", err)
-			return
-		}
+func listScenariosCmd() *cobra.Command {
+	return &cobra.Command{
+		Use:   "list-scenarios",
+		Short: "List all available embedded scenarios",
+		Long:  `List all scenario files that are embedded in the yaketty binary.`,
+		Run: func(cmd *cobra.Command, args []string) {
+			scenarios, err := library.ListScenarios()
+			if err != nil {
+				slog.Error("failed to list scenarios", "error", err)
+				return
+			}
 
-		for _, scenario := range scenarios {
-			fmt.Println(scenario)
-		}
-	},
-}
-
-func init() {
-	rootCmd.AddCommand(listScenariosCmd)
+			for _, scenario := range scenarios {
+				fmt.Println(scenario)
+			}
+		},
+	}
 }
