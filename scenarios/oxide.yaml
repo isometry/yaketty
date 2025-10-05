@@ -5,14 +5,18 @@ scenario: |
   The conversation is a role-play exercise, with each participant embodying their persona. The goal is to explore the perspectives and opinions of each participant on the topic, engaging in a lively and informative discussion.
 
   Avoid stating the obvious, and instead focus on the nuances and subtleties of the topic. The goal is to provide a fresh and insightful perspective on the topic, and to engage the audience in a thought-provoking conversation.
-opening: |
-  We've got a really special guest on the show this week. Would you like to introduce yourself?
+
+  This is a live podcast conversation - keep responses natural and conversational, like you're speaking to the audience and each other in real time.
+opening_prompt: |
+  Welcome your special guest to the Oxide and Friends podcast and invite them to introduce themselves before diving into the topic of open source licensing changes.
 
 persona1:
-  name: Brian
-  persona: |
-    You are Brian Cantrill, formerly of Sun Microsystems, Joyent and now of Oxide Computers.
+  persona: cantrill.yaml
+  # name: Brian
+  # persona: |
+  #   You are Brian Cantrill, formerly of Sun Microsystems, Joyent and now of Oxide Computers.
 persona2:
-  name: Kelsey
-  persona: |
-    You are Kelsey Hightower, a staff developer advocate at Google Cloud.
+  persona: hightower.yaml
+  # name: Kelsey
+  # persona: |
+  #   You are Kelsey Hightower, a staff developer advocate at Google Cloud.

@@ -13,8 +13,6 @@ import (
 	"github.com/isometry/yaketty/internal/scenario"
 )
 
-var False = false
-
 type BotID int
 
 const (
@@ -22,29 +20,51 @@ const (
 	Persona2
 )
 
-var defaultPrompts = []string{
-	` A scenario involving two characters will be provided to you.
-	 You will be assigned a character to play, and you must inhabit that character's persona completely for the duration of the exchange, responding in-character throughout, and in accordance with the circumstances of the described scenario.
-	 The user will be playing the part of the **other character**.
-	 You must adopt all of **your** assigned persona's experience, knowledge, beliefs, opinions, vocabulary, mannerisms and communication style.
-	 You may infer additional characteristics of your persona, but they should be consistent with known aspects of **your assigned persona**.
-	 Unless specifically instructed otherwise, you should **never** introduce yourself.
-	 Do not copy the other character's style, stay true to your own.
-	 You must **never** break character.`,
-}
+// Configuration constants
+const (
+	reminderInterval    = 12
+	defaultPersona1Name = "Jane"
+	defaultPersona2Name = "John"
+)
+
+var (
+	defaultPrompts = []string{
+		`You are playing a character in a dialogue scenario. The user represents the other character.
+
+		 Embody your assigned persona completely - adopt their knowledge, beliefs, vocabulary, mannerisms, and communication style.
+		 Build meaningfully on previous exchanges and provide responses that advance the dialogue.
+		 Stay authentic to your character's worldview and never break character or make meta-commentary about being AI.
+		 Keep your statements and responses brief and relevant to the scenario; avoid monologues.
+		 Expect the other character to respond appropriately to the scenario, and remember that you're conversing with them.
+		 Never repeat yourself unless explicitly prompted.
+		 *SPEAK* as your character.
+
+		 Your character details and scenario context follow.`,
+	}
+
+	// Brief periodic reminders (injected every ~10-15 exchanges)
+	periodicReminder = `Remember: stay true to your character and the scenario context.`
+)
 
 func (b BotID) Opponent() BotID {
 	return 1 - b
 }
 
 type Dialogue struct {
+	// Embedded scenario configuration
 	scenario.Scenario
+
+	// Configuration
 	ExtraPrompts []string
 	Personas     [2]*persona.Persona
-	Messages     []*Message
 	Output       output.OutputStyle
-	ctx          context.Context
-	client       *api.Client
+
+	// Runtime state
+	Messages []*Message
+
+	// Internal dependencies
+	ctx    context.Context
+	client *api.Client
 }
 
 const (
@@ -71,10 +91,10 @@ func systemMessages(contents ...string) []api.Message {
 	return messages
 }
 
-func NewDialogue(ctx context.Context, cfg *config.Config) *Dialogue {
+func NewDialogue(ctx context.Context, cfg *config.Config) (*Dialogue, error) {
 	client, err := api.ClientFromEnvironment()
 	if err != nil {
-		panic(err)
+		return nil, err
 	}
 
 	return &Dialogue{
@@ -87,7 +107,7 @@ func NewDialogue(ctx context.Context, cfg *config.Config) *Dialogue {
 			&cfg.Persona2,
 		},
 		Output: output.Text{},
-	}
+	}, nil
 }
 
 func (c *Dialogue) AddMessage(botID BotID, content string) {
@@ -96,14 +116,19 @@ func (c *Dialogue) AddMessage(botID BotID, content string) {
 }
 
 func (c *Dialogue) FromPerspective(botID BotID) api.ChatRequest {
-	prompts := make([]string, 0, 4+len(defaultPrompts)+len(c.ExtraPrompts))
+	prompts := make([]string, 0, 6+len(defaultPrompts)+len(c.ExtraPrompts))
 	prompts = append(prompts, defaultPrompts...)
+
 	prompts = append(prompts,
 		c.Scenario.Scenario,
 		c.Personas[botID].Persona,
-		// fmt.Sprintf("The **other** persona/character in this scenario is %s.", c.Personas[botID.Opponent()].Name),
-		c.Scenario.Roles[botID],
+		c.Roles[botID],
 	)
+
+	// Add periodic reminder every reminderInterval messages
+	if len(c.Messages) > 0 && len(c.Messages)%reminderInterval == 0 {
+		prompts = append(prompts, periodicReminder)
+	}
 
 	prompts = append(prompts, c.ExtraPrompts...)
 
@@ -122,7 +147,7 @@ func (c *Dialogue) FromPerspective(botID BotID) api.ChatRequest {
 		Model:    c.Personas[botID].Model,
 		Messages: messages,
 		Options:  c.Personas[botID].Options.AsMap(),
-		Stream:   &False,
+		Stream:   func() *bool { b := false; return &b }(),
 	}
 
 	return cr
@@ -151,6 +176,28 @@ func (c *Dialogue) HandleResponse(botID BotID) func(api.ChatResponse) error {
 }
 
 func (c *Dialogue) Start() error {
-	c.AddMessage(Persona1, strings.TrimSpace(c.Scenario.Opening))
-	return c.SendRequest(Persona2)
+	// Send opening prompt to Persona1 as a system instruction
+	prompts := make([]string, 0, 6+len(defaultPrompts)+len(c.ExtraPrompts)+1)
+	prompts = append(prompts, defaultPrompts...)
+
+	prompts = append(prompts,
+		c.Scenario.Scenario,
+		c.Personas[Persona1].Persona,
+		c.Roles[Persona1],
+	)
+
+	prompts = append(prompts, c.ExtraPrompts...)
+	prompts = append(prompts, c.OpeningPrompt)
+
+	messages := systemMessages(prompts...)
+
+	chatRequest := api.ChatRequest{
+		Model:    c.Personas[Persona1].Model,
+		Messages: messages,
+		Options:  c.Personas[Persona1].Options.AsMap(),
+		Stream:   func() *bool { b := false; return &b }(),
+	}
+
+	slog.Debug("sending opening request", slog.String("perspective", c.Personas[Persona1].Name), slog.Any("chatRequest", chatRequest))
+	return c.client.Chat(c.ctx, &chatRequest, c.HandleResponse(Persona1))
 }

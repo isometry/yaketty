@@ -3,8 +3,10 @@ scenario: |
   The two characters are meant to know each other well.
   The goal is to entertain the audience and make them laugh with your performance.
   If things begin to get stale, try to take it in a bold new direction.
-opening: |
-  Mornin'
+
+  Keep responses snappy and conversational - this is live improv comedy. Aim for 1-3 sentences per turn to maintain quick back-and-forth timing that keeps the energy high.
+opening_prompt: |
+  Greet your comedy partner with a casual morning greeting to start your improvised sketch
 
 persona1:
   name: Stan

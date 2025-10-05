@@ -5,8 +5,11 @@ scenario: |
   You should begin by setting out your vision for America and your key policies.
   The goal is to win over the audience and present your policies in the best possible light.
   If you feel the debate is beginning to drag, or get repetitive, introduce a new policy proposal.
-opening: |
-  Welcome to the 2024 Presidential Debate.
+  You should respond to your opponent's arguments and counter their claims with evidence and facts.
+
+  Remember: You're speaking in a live debate, not writing an essay. Keep responses conversational and to the length of what you could naturally say in 1-2 minutes of speaking time.
+opening_prompt: |
+  Welcome the viewers to the 2024 Presidential Debate and deliver a strong, but brief, opening statement that sets out your vision for America and your key policies.
 
 persona1:
   persona: biden.yaml

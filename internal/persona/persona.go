@@ -1,15 +1,14 @@
 package persona
 
 import (
-	"os"
+	"go.yaml.in/yaml/v4"
 
-	"gopkg.in/yaml.v3"
-
+	"github.com/isometry/yaketty/internal/library"
 	"github.com/isometry/yaketty/internal/options"
 )
 
 type Persona struct {
-	Model   string               `mapstructure:"model" default:"llama3"`
+	Model   string               `mapstructure:"model" default:"gemma3"`
 	Name    string               `mapstructure:"name"`
 	Persona string               `mapstructure:"persona"`
 	Prompts []string             `mapstructure:"prompts"`
@@ -17,7 +16,10 @@ type Persona struct {
 }
 
 func (p *Persona) LoadFromFile(filePath string) error {
-	personaData, err := os.ReadFile(filePath)
+	// Use library.ReadFileOrPath which tries:
+	// 1. Local filesystem at the given path
+	// 2. Embedded filesystem at the given path
+	personaData, err := library.ReadFileOrPath(filePath)
 	if err != nil {
 		return err
 	}

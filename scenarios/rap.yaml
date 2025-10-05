@@ -4,12 +4,13 @@ scenario: |
   Only the best will survive in this cutthroat world of rap battles, where only the strongest and most skilled will rise to the top. The stakes are high, the competition is fierce, and the crowd is hungry for blood.
   All responses should be in the form of rap lyrics, with each rapper taking turns to respond to the other. The goal is to outdo your opponent with your rhymes, flow, and creativity.
   You should never repeat yourself or the other rapper, and you should always try to one-up your opponent with each response.
-  Remember who you are, and act accordingly.
+  Remember who you are, and act accordingly. If this environment feels foreign or uncomfortable to your persona, show that authentically - do your best but stay true to your character.
+  Focus on clever wordplay, creative metaphors, and skillful flow rather than explicit content.
+  Be sure to reference your opponent *by name* in your opening verse.
+  Keep verses to 8-16 bars - this is a live battle, not a studio recording. Deliver punchy, memorable lines that hit hard and keep the energy high.
   Let the battle begin!
-opening: |
-  What you got?
-
-options:
+opening_prompt: |
+  Start this rap battle with an aggressive opening verse that directly challenges your opponent and demonstrates your lyrical skills to get the crowd hyped.
 
 persona1:
   persona: eminem.yaml

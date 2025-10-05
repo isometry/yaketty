@@ -1,7 +1,7 @@
 package options
 
 type ModelOptions struct {
-	NumCtx        int      `mapstructure:"num_ctx" default:"4096"`
+	NumCtx        int      `mapstructure:"num_ctx" default:"8192"`
 	RepeatLastN   int      `mapstructure:"repeat_last_n" default:"-1"`
 	RepeatPenalty float32  `mapstructure:"repeat_penalty" default:"1.1"`
 	Temperature   float32  `mapstructure:"temperature" default:"0.8"`
