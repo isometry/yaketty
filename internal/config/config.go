@@ -1,7 +1,9 @@
 package config
 
 import (
+	"bytes"
 	"cmp"
+	"fmt"
 	"log/slog"
 	"os"
 	"path/filepath"
@@ -26,20 +28,50 @@ type Config struct {
 }
 
 func Load(path, name string) (*Config, error) {
-	// if name is a valid file path, then use it, else use the default config file name
-	filename := filepath.Join(path, name)
-	slog.Debug("loading config", "filename", filename)
+	var data []byte
+	var err error
 
-	if _, err := os.Stat(filename); err == nil {
-		viper.SetConfigFile(filename)
+	// Check if name is a direct path (has separators or is absolute)
+	if library.IsDirectPath(name) {
+		// Direct file path - try to load from filesystem
+		filename := filepath.Join(path, name)
+		slog.Debug("loading config from direct path", "filename", filename)
+
+		if _, err := os.Stat(filename); err == nil {
+			viper.SetConfigFile(filename)
+		} else {
+			viper.AddConfigPath(path)
+			viper.SetConfigName(name)
+		}
+
+		if err := viper.ReadInConfig(); err != nil {
+			slog.Error("failed to read config", "error", err)
+			return nil, err
+		}
 	} else {
-		viper.AddConfigPath(path)
-		viper.SetConfigName(name)
-	}
+		// Scenario name - use library fallback (local first, then embedded)
+		scenarioName := name
+		if !strings.HasSuffix(scenarioName, ".yaml") {
+			scenarioName = scenarioName + ".yaml"
+		}
 
-	if err := viper.ReadInConfig(); err != nil {
-		slog.Error("failed to read config", "error", err)
-		return nil, err
+		scenarioPath := filepath.Join("scenarios", scenarioName)
+		slog.Debug("loading config from scenario", "name", name, "path", scenarioPath)
+
+		data, err = library.ReadFileOrPath(scenarioPath)
+		if err != nil {
+			// Provide helpful error with available scenarios
+			availableScenarios, _ := library.ListScenarios()
+			slog.Error("scenario not found", slog.String("scenario", name), slog.Any("available", availableScenarios))
+			return nil, fmt.Errorf("scenario not found: %s (available scenarios: %v)", name, availableScenarios)
+		}
+
+		// Load YAML data into Viper
+		viper.SetConfigType("yaml")
+		if err := viper.ReadConfig(bytes.NewReader(data)); err != nil {
+			slog.Error("failed to parse scenario YAML", "error", err)
+			return nil, err
+		}
 	}
 
 	var config Config
@@ -164,8 +196,9 @@ func Load(path, name string) (*Config, error) {
 					return nil, err
 				}
 			} else {
-				// Not a file, treat as persona description string
-				config.Persona1.Persona = persona1Override
+				// Library reference not found - return error
+				availablePersonas, _ := library.ListPersonas()
+				return nil, fmt.Errorf("persona not found in library: %s (available personas: %v)", persona1Override, availablePersonas)
 			}
 		}
 	}
@@ -195,8 +228,9 @@ func Load(path, name string) (*Config, error) {
 					return nil, err
 				}
 			} else {
-				// Not a file, treat as persona description string
-				config.Persona2.Persona = persona2Override
+				// Library reference not found - return error
+				availablePersonas, _ := library.ListPersonas()
+				return nil, fmt.Errorf("persona not found in library: %s (available personas: %v)", persona2Override, availablePersonas)
 			}
 		}
 	}

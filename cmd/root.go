@@ -19,10 +19,29 @@ var (
 
 func New(version string) *cobra.Command {
 	rootCmd := &cobra.Command{
-		Use:          "yaketty [config]",
-		Args:         cobra.ExactArgs(1),
-		Short:        "A CLI for driving conversational AI models",
-		Long:         `Yaketty orchestrates conversational AI dialogues between two personas using the Ollama API. It enables scripted conversations where two AI models play different characters in various scenarios.`,
+		Use:   "yaketty [config-file|scenario]",
+		Args:  cobra.ExactArgs(1),
+		Short: "A CLI for driving conversational AI models",
+		Long: `Yaketty orchestrates conversational AI dialogues between two personas using the Ollama API.
+
+USAGE PATTERNS:
+  # Load a config file from filesystem
+  yaketty examples/political-discourse.yaml
+
+  # Load scenario directly from library
+  yaketty debate
+
+  # Load config file, but swap in different scenario
+  yaketty examples/tech-titans.yaml -s philosophy-duel
+
+  # Override personas while keeping everything else
+  yaketty debate -1 biden -2 trump
+
+The positional argument accepts:
+  - File paths (contains / or .yaml): loaded as full config file
+  - Scenario names (e.g., "debate"): loaded from scenarios/ library
+
+Flags override specific parts of the loaded configuration.`,
 		Version:      version,
 		PreRunE:      Load,
 		RunE:         Run,
