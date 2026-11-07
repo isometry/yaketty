@@ -198,6 +198,8 @@ persona2:
     temperature: 0.7
 ```
 
+Thinking models answer directly by default; add `--think` (or `think: true` on a persona) to let them reason first. MLX (safetensors) models on Apple Silicon need no special handling. See [USAGE.md](USAGE.md#thinking-models) for details.
+
 ## 💡 Example Combinations
 
 **Educational Dialogues:**

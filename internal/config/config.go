@@ -265,5 +265,12 @@ func Load(path, name string) (*Config, error) {
 		config.Persona2.Model = globalModel
 	}
 
+	// Global thinking override only ever enables; per-persona `think: true` survives without the flag
+	if viper.GetBool("think") {
+		slog.Debug("enabling thinking for both personas")
+		config.Persona1.Think = true
+		config.Persona2.Think = true
+	}
+
 	return &config, nil
 }

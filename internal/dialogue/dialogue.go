@@ -147,6 +147,7 @@ func (c *Dialogue) FromPerspective(botID BotID) api.ChatRequest {
 		Model:    c.Personas[botID].Model,
 		Messages: messages,
 		Options:  c.Personas[botID].Options.AsMap(),
+		Think:    &api.ThinkValue{Value: c.Personas[botID].Think},
 		Stream:   func() *bool { b := false; return &b }(),
 	}
 
@@ -195,6 +196,7 @@ func (c *Dialogue) Start() error {
 		Model:    c.Personas[Persona1].Model,
 		Messages: messages,
 		Options:  c.Personas[Persona1].Options.AsMap(),
+		Think:    &api.ThinkValue{Value: c.Personas[Persona1].Think},
 		Stream:   func() *bool { b := false; return &b }(),
 	}
 

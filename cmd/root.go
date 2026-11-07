@@ -73,12 +73,15 @@ Flags override specific parts of the loaded configuration.`,
 	flagSet.StringP("model", "m", "", "Override the model for both personas")
 	_ = viper.BindPFlag("model", flagSet.Lookup("model"))
 
+	flagSet.Bool("think", false, "enable thinking for both personas (thinking models only; ignored by other models)")
+	_ = viper.BindPFlag("think", flagSet.Lookup("think"))
+
 	flagSet.StringVarP(&path, "path", "c", ".", "The path to the configuration file")
 
 	flagSet.Int("context", 8192, "size of the context window used to generate the next token")
 	_ = viper.BindPFlag("options.num_ctx", flagSet.Lookup("context"))
 
-	flagSet.Int("repeat-last-n", -1, "")
+	flagSet.Int("repeat-last-n", -1, "tokens to consider for repetition penalty (0 = disabled, -1 = num_ctx)")
 	_ = viper.BindPFlag("options.repeat_last_n", flagSet.Lookup("repeat-last-n"))
 
 	flagSet.Float32("repeat-penalty", 1.1, "")

@@ -10,10 +10,19 @@ type ModelOptions struct {
 	TopP          float32  `mapstructure:"top_p" default:"0.9"`
 }
 
+// AsMap converts the options to the map form expected by the Ollama API.
+//
+// Ollama documents repeat_last_n = -1 as "use num_ctx", but since Ollama 0.34
+// the llama-server backend rejects negative values, so the sentinel is
+// resolved here. 0 (disabled) and positive values are passed through.
 func (o ModelOptions) AsMap() map[string]any {
+	repeatLastN := o.RepeatLastN
+	if repeatLastN < 0 {
+		repeatLastN = o.NumCtx
+	}
 	return map[string]any{
 		"num_ctx":        o.NumCtx,
-		"repeat_last_n":  o.RepeatLastN,
+		"repeat_last_n":  repeatLastN,
 		"repeat_penalty": o.RepeatPenalty,
 		"temperature":    o.Temperature,
 		"stop":           o.Stop,
