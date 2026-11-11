@@ -22,6 +22,15 @@
 
 ### Installation
 
+**Homebrew** (macOS and Linux):
+
+```bash
+brew trust isometry/tap   # one-time, required on Homebrew 6+
+brew install isometry/tap/yaketty
+```
+
+**From source:**
+
 ```bash
 git clone https://github.com/isometry/yaketty.git
 cd yaketty
