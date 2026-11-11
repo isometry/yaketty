@@ -1,0 +1,22 @@
+formula:
+  name: yaketty
+  description: Orchestrated conversations between AI personas using Ollama
+  homepage: https://just.breathe.io/project/yaketty/
+  license: MIT
+  install:
+    completions: true
+  test:
+    command: [--version]
+
+source:
+  type: local
+  build:
+    packages: ["."]
+    ldflags: >-
+      -s -w
+      -X main.version={{.Version}}
+      -X main.commit={{.ShortCommit}}
+      -X main.date={{.Date}}
+
+tap:
+  owner: isometry

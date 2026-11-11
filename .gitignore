@@ -1,0 +1,5 @@
+/yaketty
+dist/
+bottles/
+*~
+.serena/
