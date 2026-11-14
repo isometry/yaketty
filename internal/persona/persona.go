@@ -12,6 +12,7 @@ type Persona struct {
 	Name    string               `mapstructure:"name"`
 	Persona string               `mapstructure:"persona"`
 	Prompts []string             `mapstructure:"prompts"`
+	Think   bool                 `mapstructure:"think"`
 	Options options.ModelOptions `mapstructure:"options"`
 }
 
