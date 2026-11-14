@@ -177,8 +177,8 @@ func (c *Dialogue) HandleResponse(botID BotID) func(api.ChatResponse) error {
 }
 
 func (c *Dialogue) Start() error {
-	// Send opening prompt to Persona1 as a system instruction
-	prompts := make([]string, 0, 6+len(defaultPrompts)+len(c.ExtraPrompts)+1)
+	// Send opening prompt to Persona1 as the first user turn
+	prompts := make([]string, 0, 6+len(defaultPrompts)+len(c.ExtraPrompts))
 	prompts = append(prompts, defaultPrompts...)
 
 	prompts = append(prompts,
@@ -188,9 +188,9 @@ func (c *Dialogue) Start() error {
 	)
 
 	prompts = append(prompts, c.ExtraPrompts...)
-	prompts = append(prompts, c.OpeningPrompt)
 
-	messages := systemMessages(prompts...)
+	// Opening prompt must be a user turn: some renderers (qwen3.5+) reject requests without one
+	messages := append(systemMessages(prompts...), newMessage(userRole, c.OpeningPrompt))
 
 	chatRequest := api.ChatRequest{
 		Model:    c.Personas[Persona1].Model,
